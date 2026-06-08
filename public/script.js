@@ -1,33 +1,58 @@
+const socket = io();
+
 const shareBtn = document.getElementById("shareBtn");
 const localVideo = document.getElementById("localVideo");
 const statusDiv = document.getElementById("status");
 
 shareBtn.addEventListener("click", startSharing);
 
+const peer = new RTCPeerConnection();
+
+peer.onicecandidate = (event) => {
+  if (event.candidate) {
+    socket.emit("ice-candidate", event.candidate);
+  }
+};
+
+socket.on("answer", async (answer) => {
+  await peer.setRemoteDescription(answer);
+});
+
+socket.on("ice-candidate", async (candidate) => {
+  try {
+    await peer.addIceCandidate(candidate);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 async function startSharing() {
 
-    statusDiv.innerHTML = "Attempting screen share...";
+  try {
 
-    try {
+    const stream =
+      await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false
+      });
 
-        console.log("mediaDevices:", navigator.mediaDevices);
+    localVideo.srcObject = stream;
 
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-            video: true,
-            audio: false
-        });
+    stream.getTracks().forEach(track => {
+      peer.addTrack(track, stream);
+    });
 
-        console.log("Stream received:", stream);
+    const offer = await peer.createOffer();
 
-        localVideo.srcObject = stream;
+    await peer.setLocalDescription(offer);
 
-        statusDiv.innerHTML = "Screen sharing started!";
+    socket.emit("offer", offer);
 
-    } catch (err) {
+    statusDiv.innerHTML = "Sharing screen";
 
-        console.error(err);
+  } catch (err) {
 
-        statusDiv.innerHTML =
-            "ERROR: " + err.name + " - " + err.message;
-    }
+    statusDiv.innerHTML =
+      "ERROR: " + err.name + " - " + err.message;
+  }
 }
