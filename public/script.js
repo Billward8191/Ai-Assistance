@@ -1,21 +1,9 @@
 const shareBtn = document.getElementById("shareBtn");
-const localVideo = document.getElementById("localVideo");
 const statusDiv = document.getElementById("status");
 
-shareBtn.addEventListener("click", startSharing);
+console.log("script loaded");
 
-async function startSharing() {
-  try {
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: false
-    });
-
-    localVideo.srcObject = stream;
-
-    statusDiv.innerHTML = "Screen sharing started!";
-  } catch (err) {
-    statusDiv.innerHTML =
-      "ERROR: " + err.name + " - " + err.message;
-  }
-}
+shareBtn.addEventListener("click", () => {
+    console.log("button clicked");
+    statusDiv.innerHTML = "Button click detected";
+});
