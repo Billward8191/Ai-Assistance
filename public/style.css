@@ -1,0 +1,48 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#111;
+  min-height:100dvh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.container{
+  width:100%;
+  padding:20px;
+}
+
+.card{
+  max-width:600px;
+  margin:auto;
+  background:#222;
+  color:white;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+}
+
+button{
+  padding:15px 25px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+video{
+  width:100%;
+  margin-top:20px;
+  background:black;
+  border-radius:10px;
+}
+
+#status{
+  margin-top:15px;
+}
