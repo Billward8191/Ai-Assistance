@@ -1,9 +1,33 @@
 const shareBtn = document.getElementById("shareBtn");
+const localVideo = document.getElementById("localVideo");
 const statusDiv = document.getElementById("status");
 
-console.log("script loaded");
+shareBtn.addEventListener("click", startSharing);
 
-shareBtn.addEventListener("click", () => {
-    console.log("button clicked");
-    statusDiv.innerHTML = "Button click detected";
-});
+async function startSharing() {
+
+    statusDiv.innerHTML = "Attempting screen share...";
+
+    try {
+
+        console.log("mediaDevices:", navigator.mediaDevices);
+
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+            video: true,
+            audio: false
+        });
+
+        console.log("Stream received:", stream);
+
+        localVideo.srcObject = stream;
+
+        statusDiv.innerHTML = "Screen sharing started!";
+
+    } catch (err) {
+
+        console.error(err);
+
+        statusDiv.innerHTML =
+            "ERROR: " + err.name + " - " + err.message;
+    }
+}
