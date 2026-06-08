@@ -6,7 +6,13 @@ const statusDiv = document.getElementById("status");
 
 shareBtn.addEventListener("click", startSharing);
 
-const peer = new RTCPeerConnection();
+const peer = new RTCPeerConnection({
+  iceServers: [
+    {
+      urls: "stun:stun.l.google.com:19302"
+    }
+  ]
+});
 
 peer.onicecandidate = (event) => {
   if (event.candidate) {
@@ -15,15 +21,29 @@ peer.onicecandidate = (event) => {
 };
 
 socket.on("answer", async (answer) => {
-  await peer.setRemoteDescription(answer);
+
+  console.log("Answer received");
+
+  await peer.setRemoteDescription(
+    new RTCSessionDescription(answer)
+  );
+
 });
 
 socket.on("ice-candidate", async (candidate) => {
+
   try {
-    await peer.addIceCandidate(candidate);
+
+    await peer.addIceCandidate(
+      new RTCIceCandidate(candidate)
+    );
+
   } catch (err) {
+
     console.error(err);
+
   }
+
 });
 
 async function startSharing() {
@@ -46,13 +66,19 @@ async function startSharing() {
 
     await peer.setLocalDescription(offer);
 
+    console.log("Offer sent");
+
     socket.emit("offer", offer);
 
     statusDiv.innerHTML = "Sharing screen";
 
   } catch (err) {
 
+    console.error(err);
+
     statusDiv.innerHTML =
       "ERROR: " + err.name + " - " + err.message;
+
   }
+
 }
